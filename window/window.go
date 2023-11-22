@@ -27,7 +27,7 @@ func (c CustomTheme) TextColor() color.Color {
 	return color.White
 }
 
-// NewWindow creates a new window
+// NewWindow creates a new window - TODO: Make it better
 func NewWindow(title string) *ChatWindow {
 	cw := &ChatWindow{
 		Title: title,
@@ -35,8 +35,6 @@ func NewWindow(title string) *ChatWindow {
 	cw.App = app.New()
 	cw.App.Settings().SetTheme(&CustomTheme{Theme: cw.App.Settings().Theme()})
 	cw.Win = cw.App.NewWindow(title)
-	// Resize to 800x600
-	cw.Win.Resize(fyne.NewSize(800, 400))
 	// Fix the size of the window
 	cw.Win.SetFixedSize(true)
 	// Create a ChatOutpt Entry Widget
@@ -62,22 +60,29 @@ func NewWindow(title string) *ChatWindow {
 	// Create a Send Button
 	sendButton := widget.NewButton("Send", cw.Send)
 	sendButton.Resize(fyne.NewSize(50, 100))
+	// Create a Clear Button
+	clearButton := widget.NewButton("Clear", cw.Clear)
 	// Set the size of the ChatInput
 	input.SetMinSize(fyne.NewSize(750, 100))
 	// Add the input and the button to the horizontal container
 	horizontal.Add(input)
 	horizontal.Add(sendButton)
+	horizontal.Add(clearButton)
 	// Create a Grid Row for the ChatOutput and ChatInput
 	content := container.NewVBox(output, horizontal)
 	// Set the content of the window
 	cw.Win.SetContent(content)
+	// Resize to 800x600
+	cw.Win.Resize(fyne.NewSize(800, 400))
+	// Set to fixed size
+	cw.Win.SetFixedSize(true)
 	return cw
 }
 
 // Send will send the text from the ChatInput to the ChatOutput
 func (w *ChatWindow) Send() {
 	if w.Input.Text != "" {
-		w.ChatText = w.ChatText + "\n" + w.Input.Text
+		w.ChatText = w.ChatText + "\n" + "You: \n" + w.Input.Text + "\n"
 		w.Input.SetText("")
 		w.Output.SetText(w.ChatText)
 	}
@@ -85,5 +90,11 @@ func (w *ChatWindow) Send() {
 
 // Changed will update the ChatOutput
 func (w *ChatWindow) Changed(text string) {
+	w.Output.SetText(w.ChatText)
+}
+
+// Clear will clear the ChatOutput
+func (w *ChatWindow) Clear() {
+	w.ChatText = ""
 	w.Output.SetText(w.ChatText)
 }
