@@ -1,9 +1,12 @@
 package window
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
 )
@@ -53,8 +56,6 @@ func NewWindow(title string) *ChatWindow {
 	// Create a ChatOutpt Entry Widget
 	cw.Output = &ExtendedEntry{input: cw.Input}
 	cw.Output.OnChanged = cw.Changed
-	// Set text wrapping to true
-	cw.Output.Wrapping = fyne.TextWrapWord
 	// Set the Textcolor to white
 	cw.Output.TextStyle.Bold = true
 	cw.Output.TextStyle.Monospace = true
@@ -78,6 +79,8 @@ func NewWindow(title string) *ChatWindow {
 	content := container.NewVBox(output, horizontal)
 	// Set the content of the window
 	cw.Win.SetContent(content)
+	// Create a new Menu
+	cw.CreateMainMenu()
 	// Resize to 800x600
 	cw.Win.Resize(fyne.NewSize(800, 400))
 	// Set to fixed size
@@ -108,4 +111,38 @@ func (w *ChatWindow) Clear() {
 // Tapped Function of the ExtendedEntry
 func (e *ExtendedEntry) Tapped(*fyne.PointEvent) {
 	e.input.Enable()
+}
+
+// CreateMainMenu creates a new Menu
+func (cw *ChatWindow) CreateMainMenu() {
+	// The Menueitems
+	loadItem := fyne.NewMenuItem("Load Model", func() {
+		d := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if err == nil && reader != nil {
+				cw.App.Quit()
+			}
+			// TODO: Add Model Loading
+			fmt.Println("Model Loading")
+		}, cw.Win)
+		// Show Only gguf Data
+		d.SetFilter(storage.NewExtensionFileFilter([]string{".gguf"}))
+		d.Show()
+	})
+	configItem := fyne.NewMenuItem("Config", func() {
+		// TODO: Add Config
+		dialog.ShowInformation("About", "We will add a config soon", cw.Win)
+	})
+	quitItem := fyne.NewMenuItem("Quit", func() {
+		cw.App.Quit()
+	})
+	aboutItem := fyne.NewMenuItem("About", func() {
+		// Opens up a Dialog with informations about the program
+		dialog.ShowInformation("About", "AI4All\nVersion: 0.1.0\nAuthor: AI4All", cw.Win)
+	})
+	// Create the Main Menu
+	mainMenu := fyne.NewMainMenu(
+		fyne.NewMenu("File", loadItem, configItem, quitItem),
+		fyne.NewMenu("About", aboutItem),
+	)
+	cw.Win.SetMainMenu(mainMenu)
 }
