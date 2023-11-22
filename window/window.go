@@ -35,7 +35,7 @@ func (c CustomTheme) TextColor() color.Color {
 	return color.White
 }
 
-// NewWindow creates a new window - TODO: Make it better
+// NewWindow creates a new window - TODO: Make it beautify
 func NewWindow(title string) *ChatWindow {
 	cw := &ChatWindow{
 		Title: title,
