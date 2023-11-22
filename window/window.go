@@ -13,9 +13,14 @@ type ChatWindow struct {
 	Title    string
 	App      fyne.App
 	Win      fyne.Window
-	Output   *widget.Entry
+	Output   *ExtendedEntry
 	Input    *widget.Entry
 	ChatText string
+}
+
+type ExtendedEntry struct {
+	widget.Entry
+	input *widget.Entry
 }
 
 // CustomTheme will overwrite TextColor
@@ -37,8 +42,16 @@ func NewWindow(title string) *ChatWindow {
 	cw.Win = cw.App.NewWindow(title)
 	// Fix the size of the window
 	cw.Win.SetFixedSize(true)
+	// Create a ChatInput Entry Widget
+	cw.Input = widget.NewMultiLineEntry()
+	// Set the placeholder text
+	cw.Input.SetPlaceHolder("Enter your message here...")
+	// Set text wrapping to true
+	cw.Input.Wrapping = fyne.TextWrapWord
+	// Create a Container for the ChatInput
+	input := container.NewVScroll(cw.Input)
 	// Create a ChatOutpt Entry Widget
-	cw.Output = widget.NewMultiLineEntry()
+	cw.Output = &ExtendedEntry{input: cw.Input}
 	cw.Output.OnChanged = cw.Changed
 	// Set text wrapping to true
 	cw.Output.Wrapping = fyne.TextWrapWord
@@ -48,14 +61,7 @@ func NewWindow(title string) *ChatWindow {
 	// Create a Container for the ChatOutput
 	output := container.NewVScroll(cw.Output)
 	output.SetMinSize(fyne.NewSize(0, 350))
-	// Create a ChatInput Entry Widget
-	cw.Input = widget.NewMultiLineEntry()
-	// Set the placeholder text
-	cw.Input.SetPlaceHolder("Enter your message here...")
-	// Set text wrapping to true
-	cw.Input.Wrapping = fyne.TextWrapWord
-	// Create a Container for the ChatInput
-	input := container.NewVScroll(cw.Input)
+	// Create a horizontal container
 	horizontal := container.NewHBox()
 	// Create a Send Button
 	sendButton := widget.NewButton("Send", cw.Send)
@@ -97,4 +103,9 @@ func (w *ChatWindow) Changed(text string) {
 func (w *ChatWindow) Clear() {
 	w.ChatText = ""
 	w.Output.SetText(w.ChatText)
+}
+
+// Tapped Function of the ExtendedEntry
+func (e *ExtendedEntry) Tapped(*fyne.PointEvent) {
+	e.input.Enable()
 }
