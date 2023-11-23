@@ -40,27 +40,6 @@ type CustomTheme struct {
 	fyne.Theme
 }
 
-// Change the TextColor to white
-func (c CustomTheme) TextColor() color.Color {
-	return color.White
-}
-
-// NewInputEntry creates a new InputEntry
-func NewInputEntry(cw *ChatWindow) *InputEntry {
-	entry := &InputEntry{cw: cw}
-	entry.ExtendBaseWidget(entry) // Initialisiert das Basiselement
-	return entry
-}
-
-// Will overwrite the TypedShortcut Function
-func (m *InputEntry) TypedShortcut(s fyne.Shortcut) {
-	if _, ok := s.(*desktop.CustomShortcut); !ok {
-		m.Entry.TypedShortcut(s)
-		return
-	}
-	m.cw.SendButton.Tapped(nil)
-}
-
 // NewWindow creates a new window - TODO: Make it beautify
 func NewWindow(title string) *ChatWindow {
 	cw := &ChatWindow{
@@ -177,4 +156,25 @@ func (cw *ChatWindow) CreateMainMenu() {
 		fyne.NewMenu("About", aboutItem),
 	)
 	cw.Win.SetMainMenu(mainMenu)
+}
+
+// Change the TextColor to white
+func (c CustomTheme) TextColor() color.Color {
+	return color.White
+}
+
+// NewInputEntry creates a new InputEntry
+func NewInputEntry(cw *ChatWindow) *InputEntry {
+	entry := &InputEntry{cw: cw}
+	entry.ExtendBaseWidget(entry) // Initialisiert das Basiselement
+	return entry
+}
+
+// Will overwrite the TypedShortcut Function
+func (m *InputEntry) TypedShortcut(s fyne.Shortcut) {
+	if _, ok := s.(*desktop.CustomShortcut); !ok {
+		m.Entry.TypedShortcut(s)
+		return
+	}
+	m.cw.SendButton.Tapped(nil)
 }
