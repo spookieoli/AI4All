@@ -1,6 +1,7 @@
 package window
 
 import (
+	"AI4All/modelloader"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -21,6 +22,7 @@ type ChatWindow struct {
 	Input      *InputEntry
 	SendButton *widget.Button
 	ChatText   string
+	Model      *modelloader.ModelLoader
 }
 
 // ExtendedEntry will overwrite the Tapped Function TODO: Add NewExtendedEntry
@@ -42,9 +44,12 @@ type CustomTheme struct {
 
 // NewWindow creates a new window - TODO: Make it beautify
 func NewWindow(title string) *ChatWindow {
+	// Create a new ChatWindow
 	cw := &ChatWindow{
 		Title: title,
+		Model: nil,
 	}
+	// Create a new App
 	cw.App = app.New()
 	cw.App.Settings().SetTheme(&CustomTheme{Theme: cw.App.Settings().Theme()})
 	cw.Win = cw.App.NewWindow(title)
