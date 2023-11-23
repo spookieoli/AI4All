@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
@@ -13,17 +14,25 @@ import (
 
 // ChatWindow
 type ChatWindow struct {
-	Title    string
-	App      fyne.App
-	Win      fyne.Window
-	Output   *ExtendedEntry
-	Input    *widget.Entry
-	ChatText string
+	Title      string
+	App        fyne.App
+	Win        fyne.Window
+	Output     *ExtendedEntry
+	Input      *InputEntry
+	SendButton *widget.Button
+	ChatText   string
 }
 
+// ExtendedEntry will overwrite the Tapped Function TODO: Add NewExtendedEntry
 type ExtendedEntry struct {
 	widget.Entry
-	input *widget.Entry
+	input *InputEntry
+}
+
+// InputEntry will overwrite the Tapped Function
+type InputEntry struct {
+	widget.Entry
+	cw *ChatWindow
 }
 
 // CustomTheme will overwrite TextColor
@@ -31,8 +40,25 @@ type CustomTheme struct {
 	fyne.Theme
 }
 
+// Change the TextColor to white
 func (c CustomTheme) TextColor() color.Color {
 	return color.White
+}
+
+// NewInputEntry creates a new InputEntry
+func NewInputEntry(cw *ChatWindow) *InputEntry {
+	entry := &InputEntry{cw: cw}
+	entry.ExtendBaseWidget(entry) // Initialisiert das Basiselement
+	return entry
+}
+
+// Will overwrite the TypedShortcut Function
+func (m *InputEntry) TypedShortcut(s fyne.Shortcut) {
+	if _, ok := s.(*desktop.CustomShortcut); !ok {
+		m.Entry.TypedShortcut(s)
+		return
+	}
+	m.cw.SendButton.Tapped(nil)
 }
 
 // NewWindow creates a new window - TODO: Make it beautify
@@ -46,7 +72,7 @@ func NewWindow(title string) *ChatWindow {
 	// Fix the size of the window
 	cw.Win.SetFixedSize(true)
 	// Create a ChatInput Entry Widget
-	cw.Input = widget.NewMultiLineEntry()
+	cw.Input = NewInputEntry(cw)
 	// Set the placeholder text
 	cw.Input.SetPlaceHolder("Enter your message here...")
 	// Set text wrapping to true
@@ -67,6 +93,7 @@ func NewWindow(title string) *ChatWindow {
 	// Create a Send Button
 	sendButton := widget.NewButton("Send", cw.Send)
 	sendButton.Resize(fyne.NewSize(50, 100))
+	cw.SendButton = sendButton
 	// Create a Clear Button
 	clearButton := widget.NewButton("Clear", cw.Clear)
 	// Set the size of the ChatInput
@@ -81,6 +108,11 @@ func NewWindow(title string) *ChatWindow {
 	cw.Win.SetContent(content)
 	// Create a new Menu
 	cw.CreateMainMenu()
+	// add key shortcuts
+	shiftEnter := &desktop.CustomShortcut{KeyName: fyne.KeyReturn, Modifier: fyne.KeyModifierControl}
+	cw.Win.Canvas().AddShortcut(shiftEnter, func(shortcut fyne.Shortcut) {
+		sendButton.Tapped(nil)
+	})
 	// Resize to 800x600
 	cw.Win.Resize(fyne.NewSize(800, 400))
 	// Set to fixed size
