@@ -2,7 +2,10 @@ module AI4All
 
 go 1.21.4
 
-require fyne.io/fyne/v2 v2.4.2
+require (
+	fyne.io/fyne/v2 v2.4.2
+	github.com/go-skynet/go-llama.cpp v0.0.0-20231009155254-aeba71ee8428
+)
 
 require (
 	fyne.io/systray v1.10.1-0.20231115130155-104f5ef7839e // indirect
@@ -33,3 +36,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/js/dom v0.0.0-20210725211120-f030747120f2 // indirect
 )
+
+replace github.com/go-skynet/go-llama.cpp => ../go-llama.cpp/
