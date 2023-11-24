@@ -27,8 +27,7 @@ func NewModelLoader(model string, threads, contextlength, gpulayers int) (*Model
 
 // Predictor Predicts
 func (ml *ModelLoader) Predictor(input string, stopwords []string, maxtokens, seed, topk int, topp float32) (string, error) {
-	answer, err := ml.Model.Predict(input, llama.EnablePromptCacheAll, llama.SetTokens(maxtokens), llama.SetThreads(ml.Threads), llama.SetTopK(topk), llama.SetTopP(topp),
-		llama.SetStopWords(stopwords...), llama.SetMemoryMap(true), llama.SetTemperature(0.1), llama.SetNKeep(200))
+	answer, err := ml.Model.Predict(input, llama.SetStopWords(stopwords...), llama.SetTokens(maxtokens))
 	if err != nil {
 		return "", fmt.Errorf("predicting the model failed: %w", err)
 	}

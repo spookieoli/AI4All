@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"image/color"
 	"strings"
+	"time"
 )
 
 // ChatWindow
@@ -109,26 +110,20 @@ func NewWindow(title string) *ChatWindow {
 
 // Send will send the text from the ChatInput to the ChatOutput
 func (w *ChatWindow) Send() {
-	var answer string
-	var err error
 	// TODO: Should be loaded from config
 	system := "System: Your role is to be a helpful and friendly chat assistant. " +
-		"Your task is to provide accurate and understandable answers to a wide range of questions. " +
-		"Give short and precise answers." + "\n"
+		"Your task is to provide accurate, short and understandable answers to a wide range of questions. "
 	inputtext := w.Input.Text
 	if inputtext != "" {
 		// Update the ChatText
 		w.ChatText = w.ChatText + "\n" + "You: \n" + w.Input.Text + "\n"
 		w.Input.SetText("")
 		w.Output.SetText(w.ChatText)
+		w.Output.Refresh()
+		w.Scroller.ScrollToBottom()
 		// Send the Text to the Model
 		if w.Model != nil {
-			if w.prompt_num {
-				answer, err = w.Model.Predictor(system+" "+"User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
-				w.prompt_num = false
-			} else {
-				answer, err = w.Model.Predictor("User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
-			}
+			answer, err := w.Model.Predictor(system+"User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
 			if err != nil {
 				fmt.Println("Error while predicting:", err.Error())
 				return
@@ -138,6 +133,9 @@ func (w *ChatWindow) Send() {
 			answer = strings.Trim(answer, "\n")
 			w.ChatText = w.ChatText + "AI: \n" + answer + "\n"
 			w.Output.SetText(w.ChatText)
+			w.Output.Refresh()
+			time.Sleep(1 * time.Second)
+			w.Scroller.ScrollToBottom()
 		}
 	}
 }
