@@ -3,6 +3,7 @@ package window
 import (
 	"AI4All/modelloader"
 	"fmt"
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -11,7 +12,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"image/color"
 	"strings"
-	"time"
 )
 
 // ChatWindow
@@ -112,8 +112,7 @@ func (w *ChatWindow) Send() {
 		w.ChatText = w.ChatText + "\n" + "You: \n" + w.Input.Text + "\n"
 		w.Input.SetText("")
 		w.Output.SetText(w.ChatText)
-		w.Output.Refresh()
-		w.Scroller.ScrollToBottom()
+		w.Output.CursorRow = len(w.Output.Text) - 1
 		// Send the Text to the Model
 		if w.Model != nil {
 			answer, err := w.Model.Predictor(system+"User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
@@ -127,8 +126,7 @@ func (w *ChatWindow) Send() {
 			w.ChatText = w.ChatText + "AI: \n" + answer + "\n"
 			w.Output.SetText(w.ChatText)
 			w.Output.Refresh()
-			time.Sleep(1 * time.Second)
-			w.Scroller.ScrollToBottom()
+			w.Output.CursorRow = len(w.Output.Text) - 1
 		}
 	}
 }
