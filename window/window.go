@@ -65,22 +65,14 @@ func NewWindow(title string) *ChatWindow {
 	cw.Win.SetFixedSize(true)
 	// Create a ChatInput Entry Widget
 	cw.Input = NewInputEntry(cw)
-	// Set the placeholder text
-	cw.Input.SetPlaceHolder("Enter your message here...")
 	// Create a Container for the ChatInput
 	input := container.NewVScroll(cw.Input)
 	// Create a ChatOutpt Entry Widget
 	cw.Output = NewExtendedEntry(cw.Input)
 	cw.Output.OnChanged = cw.Changed
-	cw.Output.Wrapping = fyne.TextWrapWord
-	// Set the Textcolor to white
-	cw.Output.TextStyle.Bold = true
-	cw.Output.TextStyle.Monospace = true
 	// Create a Container for the ChatOutput
 	cw.Scroller = container.NewVScroll(cw.Output)
 	cw.Scroller.SetMinSize(fyne.NewSize(0, 350))
-	// Create a horizontal container
-	horizontal := container.NewHBox()
 	// Create a Send Button
 	sendButton := widget.NewButton("Send", cw.Send)
 	sendButton.Resize(fyne.NewSize(50, 100))
@@ -89,10 +81,8 @@ func NewWindow(title string) *ChatWindow {
 	clearButton := widget.NewButton("Clear", cw.Clear)
 	// Set the size of the ChatInput
 	input.SetMinSize(fyne.NewSize(750, 100))
-	// Add the input and the button to the horizontal container
-	horizontal.Add(input)
-	horizontal.Add(sendButton)
-	horizontal.Add(clearButton)
+	// Create a horizontal container
+	horizontal := container.NewHBox(input, sendButton, clearButton)
 	// Create a Grid Row for the ChatOutput and ChatInput
 	content := container.NewVBox(cw.Scroller, horizontal)
 	// Set the content of the window
@@ -202,6 +192,7 @@ func (c CustomTheme) TextColor() color.Color {
 func NewInputEntry(cw *ChatWindow) *InputEntry {
 	entry := &InputEntry{cw: cw}
 	entry.ExtendBaseWidget(entry) // Initialisiert das Basiselement
+	entry.SetPlaceHolder("Enter your message here...")
 	return entry
 }
 
@@ -210,6 +201,9 @@ func NewExtendedEntry(input *InputEntry) *ExtendedEntry {
 	entry := &ExtendedEntry{input: input}
 	entry.MultiLine = true
 	entry.ExtendBaseWidget(entry)
+	entry.Wrapping = fyne.TextWrapWord
+	entry.TextStyle.Bold = true
+	entry.TextStyle.Monospace = true
 	return entry
 }
 
