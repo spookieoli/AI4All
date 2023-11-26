@@ -3,7 +3,6 @@ package window
 import (
 	"AI4All/modelloader"
 	"fmt"
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -28,6 +27,10 @@ type ChatWindow struct {
 	Scroller   *container.Scroll
 	prompt_num bool
 }
+
+/****************************************************************************/
+/* Types for building the Window											*/
+/****************************************************************************/
 
 // ExtendedEntry will overwrite the Tapped Function TODO: Add NewExtendedEntry
 type ExtendedEntry struct {
