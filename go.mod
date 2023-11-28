@@ -37,4 +37,4 @@ require (
 	honnef.co/go/js/dom v0.0.0-20210725211120-f030747120f2 // indirect
 )
 
-replace github.com/go-skynet/go-llama.cpp => ../go-llama.cpp/
+replace github.com/go-skynet/go-llama.cpp => ../acc-go-llama.cpp/

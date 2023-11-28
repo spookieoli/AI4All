@@ -112,7 +112,7 @@ func (w *ChatWindow) Send() {
 		w.ChatText = w.ChatText + "\n" + "You: \n" + w.Input.Text + "\n"
 		w.Input.SetText("")
 		w.Output.SetText(w.ChatText)
-		w.Output.CursorRow = len(w.Output.Text) - 1
+		w.Output.ToBottom()
 		// Send the Text to the Model
 		if w.Model != nil {
 			answer, err := w.Model.Predictor(system+"User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
@@ -126,7 +126,7 @@ func (w *ChatWindow) Send() {
 			w.ChatText = w.ChatText + "AI: \n" + answer + "\n"
 			w.Output.SetText(w.ChatText)
 			w.Output.Refresh()
-			w.Output.CursorRow = len(w.Output.Text) - 1
+			w.Output.ToBottom()
 		}
 	}
 }
@@ -224,4 +224,9 @@ func (cw *ChatWindow) LoadModel(path string) {
 	}
 	// Set the Model
 	cw.Model = ml
+}
+
+// Scroll to bottom to show all the new Text
+func (e *ExtendedEntry) ToBottom() {
+	e.CursorRow = len(e.Text) - 1
 }
