@@ -156,6 +156,10 @@ func (cw *ChatWindow) CreateMainMenu() {
 				dialog.ShowError(err, cw.Win)
 				return
 			}
+			// Catch empty reader
+			if reader == nil {
+				return // will happen on cancel
+			}
 			cw.LoadModel(reader.URI().Path())
 		}, cw.Win)
 		// Show Only gguf Data
@@ -181,7 +185,7 @@ func (cw *ChatWindow) CreateMainMenu() {
 	cw.Win.SetMainMenu(mainMenu)
 }
 
-// Change the TextColor to white
+// TextColor Change the TextColor to white
 func (c CustomTheme) TextColor() color.Color {
 	return color.White
 }
@@ -226,7 +230,7 @@ func (cw *ChatWindow) LoadModel(path string) {
 	cw.Model = ml
 }
 
-// Scroll to bottom to show all the new Text
+// ToBottom Scroll to bottom to show all the new Text
 func (e *ExtendedEntry) ToBottom() {
 	e.CursorRow = len(e.Text) - 1
 }
