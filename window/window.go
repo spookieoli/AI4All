@@ -1,6 +1,7 @@
 package window
 
 import (
+	"AI4All/history"
 	"AI4All/modelloader"
 	"fmt"
 	"fyne.io/fyne/v2"
@@ -22,10 +23,10 @@ type ChatWindow struct {
 	Output     *ExtendedEntry
 	Input      *InputEntry
 	SendButton *widget.Button
-	ChatText   string
 	Model      *modelloader.ModelLoader
 	Scroller   *container.Scroll
 	prompt_num bool
+	history    *history.History
 }
 
 /****************************************************************************/
@@ -61,6 +62,8 @@ func NewWindow(title string) *ChatWindow {
 	cw.App = app.New()
 	cw.App.Settings().SetTheme(&CustomTheme{Theme: cw.App.Settings().Theme()})
 	cw.Win = cw.App.NewWindow(title)
+	// Get the History object
+	cw.history = &history.His
 	// Fix the size of the window
 	cw.Win.SetFixedSize(true)
 	// Create a ChatInput Entry Widget
@@ -109,9 +112,9 @@ func (w *ChatWindow) Send() {
 	inputtext := w.Input.Text
 	if inputtext != "" {
 		// Update the ChatText
-		w.ChatText = w.ChatText + "\n" + "You: \n" + w.Input.Text + "\n"
+		w.history.AddElement("You", w.Input.Text)
 		w.Input.SetText("")
-		w.Output.SetText(w.ChatText)
+		w.Output.SetText(w.history.GetHistory())
 		w.Output.ToBottom()
 		// Send the Text to the Model
 		if w.Model != nil {
@@ -123,8 +126,8 @@ func (w *ChatWindow) Send() {
 			// Update the ChatText
 			answer = strings.Trim(answer, " ")
 			answer = strings.Trim(answer, "\n")
-			w.ChatText = w.ChatText + "AI: \n" + answer + "\n"
-			w.Output.SetText(w.ChatText)
+			w.history.AddElement("AI", answer)
+			w.Output.SetText(w.history.GetHistory())
 			w.Output.Refresh()
 			w.Output.ToBottom()
 		}
@@ -133,13 +136,13 @@ func (w *ChatWindow) Send() {
 
 // Changed will update the ChatOutput
 func (w *ChatWindow) Changed(text string) {
-	w.Output.SetText(w.ChatText)
+	w.Output.SetText(w.history.GetHistory())
 }
 
 // Clear will clear the ChatOutput
 func (w *ChatWindow) Clear() {
-	w.ChatText = ""
-	w.Output.SetText(w.ChatText)
+	w.history.ClearHistory()
+	w.Output.SetText(w.history.GetHistory())
 }
 
 // MouseDown will overwrite the MouseDown in Chatoutput Function
