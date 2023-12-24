@@ -112,13 +112,13 @@ func (w *ChatWindow) Send() {
 	inputtext := w.Input.Text
 	if inputtext != "" {
 		// Update the ChatText
-		w.history.AddElement("You", w.Input.Text)
+		w.history.AddElement("HUMAN", w.Input.Text)
 		w.Input.SetText("")
 		w.Output.SetText(w.history.GetHistory())
 		w.Output.ToBottom()
 		// Send the Text to the Model
 		if w.Model != nil {
-			answer, err := w.Model.Predictor(system+"User: "+inputtext+" Assistant: ", []string{"User:"}, 512, 47, 1, 0.1)
+			answer, err := w.Model.Predictor(system+"HUMAN: "+inputtext+" ASSISTANT: ", []string{"User:"}, 512, 47, 1, 0.1)
 			if err != nil {
 				fmt.Println("Error while predicting:", err.Error())
 				return
@@ -126,7 +126,7 @@ func (w *ChatWindow) Send() {
 			// Update the ChatText
 			answer = strings.Trim(answer, " ")
 			answer = strings.Trim(answer, "\n")
-			w.history.AddElement("AI", answer)
+			w.history.AddElement("ASSISTANT", answer)
 			w.Output.SetText(w.history.GetHistory())
 			w.Output.Refresh()
 			w.Output.ToBottom()
